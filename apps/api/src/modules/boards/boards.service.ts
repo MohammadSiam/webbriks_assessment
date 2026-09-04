@@ -24,15 +24,21 @@ export class BoardsService {
   async listForUser(userId: string, page: number, limit: number) {
     const where = { OR: [{ ownerId: userId }, { members: { some: { userId } } }] };
 
-    const [items, total] = await Promise.all([
+    const [boards, total] = await Promise.all([
       this.prisma.board.findMany({
         where,
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
+        include: { members: { where: { userId }, select: { role: true } } },
       }),
       this.prisma.board.count({ where }),
     ]);
+
+    const items = boards.map(({ members, ...board }) => ({
+      ...board,
+      myRole: board.ownerId === userId ? "OWNER" : (members[0]?.role ?? "VIEWER"),
+    }));
 
     return { items, total, page, limit };
   }

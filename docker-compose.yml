@@ -1,0 +1,6 @@
+name: webbriks-kanban
+
+include:
+  - infra/docker-compose.db.yml
+  - apps/api/docker-compose.yml
+  - apps/web/docker-compose.yml

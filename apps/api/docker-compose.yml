@@ -1,0 +1,17 @@
+services:
+  api:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile
+    container_name: webbriks-api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-webbriks}:${POSTGRES_PASSWORD:-webbriks}@postgres:5432/${POSTGRES_DB:-webbriks_kanban}?schema=public
+      PORT: "4000"
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in your .env file}
+    ports:
+      - "4000:4000"

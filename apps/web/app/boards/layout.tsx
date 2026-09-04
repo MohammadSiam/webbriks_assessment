@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { AppHeader } from "@/components/layout/app-header";
 
 export default function BoardsLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -18,5 +19,10 @@ export default function BoardsLayout({ children }: { children: React.ReactNode }
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <div className="flex flex-1 flex-col">
+      <AppHeader />
+      {children}
+    </div>
+  );
 }

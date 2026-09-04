@@ -28,3 +28,5 @@ export type Board = {
 };
 
 export type BoardAccessLevel = "OWNER" | "EDITOR" | "VIEWER";
+
+export type BoardWithRole = Board & { myRole: BoardAccessLevel };
