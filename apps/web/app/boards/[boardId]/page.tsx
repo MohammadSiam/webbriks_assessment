@@ -3,18 +3,20 @@
 import { use, useState } from "react";
 import Link from "next/link";
 import { DragDropContext, type DropResult } from "@hello-pangea/dnd";
-import { Plus } from "lucide-react";
+import { Plus, Share2 } from "lucide-react";
 import type { BoardAggregate } from "@webbriks/shared-types";
 import { apiRequest, ApiError } from "@/lib/api-client";
 import { useFetch } from "@/lib/hooks/use-fetch";
 import { ColumnBlock } from "@/components/board/column-block";
 import { ColumnCreateModal } from "@/components/board/column-create-modal";
+import { ShareBoardDialog } from "@/components/board/share-board-dialog";
 
 export default function BoardDetailPage({ params }: { params: Promise<{ boardId: string }> }) {
   const { boardId } = use(params);
   const { data: board, isLoading, error, refetch, setData } = useFetch<BoardAggregate>(`/boards/${boardId}`);
   const [dragError, setDragError] = useState<string | null>(null);
   const [isAddColumnModalOpen, setIsAddColumnModalOpen] = useState(false);
+  const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
 
   const canEdit = board?.myRole === "OWNER" || board?.myRole === "EDITOR";
 
@@ -91,7 +93,18 @@ export default function BoardDetailPage({ params }: { params: Promise<{ boardId:
           </Link>
           <h1 className="text-xl font-semibold">{board.title}</h1>
         </div>
-        <span className="text-xs font-medium text-gray-400 dark:text-gray-500">{board.myRole}</span>
+        <div className="flex items-center gap-3">
+          {board.myRole === "OWNER" && (
+            <button
+              type="button"
+              onClick={() => setIsShareDialogOpen(true)}
+              className="flex items-center gap-1 rounded-md border border-gray-300 px-2 py-1 text-xs font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-900"
+            >
+              <Share2 size={14} /> Share
+            </button>
+          )}
+          <span className="text-xs font-medium text-gray-400 dark:text-gray-500">{board.myRole}</span>
+        </div>
       </header>
 
       {dragError && (
@@ -123,6 +136,15 @@ export default function BoardDetailPage({ params }: { params: Promise<{ boardId:
           boardId={boardId}
           onClose={() => setIsAddColumnModalOpen(false)}
           onCreated={refetch}
+        />
+      )}
+
+      {isShareDialogOpen && (
+        <ShareBoardDialog
+          boardId={boardId}
+          members={board.members}
+          onClose={() => setIsShareDialogOpen(false)}
+          onChanged={refetch}
         />
       )}
     </main>
