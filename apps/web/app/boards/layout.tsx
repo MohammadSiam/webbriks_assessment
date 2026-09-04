@@ -4,16 +4,19 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 
-export default function Home() {
+export default function BoardsLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, isLoading } = useAuth();
 
   useEffect(() => {
-    if (isLoading) {
-      return;
+    if (!isLoading && !user) {
+      router.replace("/login");
     }
-    router.replace(user ? "/boards" : "/login");
   }, [isLoading, user, router]);
 
-  return null;
+  if (isLoading || !user) {
+    return null;
+  }
+
+  return <>{children}</>;
 }
