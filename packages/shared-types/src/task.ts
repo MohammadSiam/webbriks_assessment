@@ -17,3 +17,10 @@ export const updateTaskSchema = z
   });
 
 export type UpdateTaskInput = z.infer<typeof updateTaskSchema>;
+
+export const moveTaskSchema = z.object({
+  targetColumnId: z.string().uuid(),
+  targetIndex: z.number().int().min(0),
+});
+
+export type MoveTaskInput = z.infer<typeof moveTaskSchema>;

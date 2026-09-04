@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { generateKeyBetween } from "fractional-indexing";
+import { generatePosition } from "../../ordering/fractional-index.js";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import type { CreateColumnDto } from "./dto/create-column.dto.js";
 import type { UpdateColumnDto } from "./dto/update-column.dto.js";
@@ -13,7 +13,7 @@ export class ColumnsService {
       where: { boardId },
       orderBy: { position: "desc" },
     });
-    const position = generateKeyBetween(lastColumn?.position ?? null, null);
+    const position = generatePosition(lastColumn?.position ?? null, null);
 
     return this.prisma.column.create({
       data: { boardId, title: dto.title, position },
