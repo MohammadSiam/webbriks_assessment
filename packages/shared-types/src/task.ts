@@ -24,3 +24,14 @@ export const moveTaskSchema = z.object({
 });
 
 export type MoveTaskInput = z.infer<typeof moveTaskSchema>;
+
+export type Task = {
+  id: string;
+  boardId: string;
+  columnId: string;
+  title: string;
+  description: string | null;
+  position: string;
+  createdAt: string;
+  updatedAt: string;
+};

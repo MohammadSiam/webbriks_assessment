@@ -17,3 +17,14 @@ export const updateBoardSchema = z
   });
 
 export type UpdateBoardInput = z.infer<typeof updateBoardSchema>;
+
+export type Board = {
+  id: string;
+  title: string;
+  description: string | null;
+  ownerId: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type BoardAccessLevel = "OWNER" | "EDITOR" | "VIEWER";

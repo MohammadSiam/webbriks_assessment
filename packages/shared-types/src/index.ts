@@ -6,3 +6,4 @@ export * from "./board-member.js";
 export * from "./pagination.js";
 export * from "./column.js";
 export * from "./task.js";
+export * from "./board-aggregate.js";
