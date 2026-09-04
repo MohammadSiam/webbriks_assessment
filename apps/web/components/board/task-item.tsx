@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Draggable } from "@hello-pangea/dnd";
 import { MoreVertical, Pencil, Trash2 } from "lucide-react";
 import type { Task } from "@webbriks/shared-types";
 import { apiRequest } from "@/lib/api-client";
@@ -9,10 +10,12 @@ import { TaskEditModal } from "./task-edit-modal";
 
 export function TaskItem({
   task,
+  index,
   canEdit,
   onChanged,
 }: {
   task: Task;
+  index: number;
   canEdit: boolean;
   onChanged: () => void;
 }) {
@@ -29,27 +32,42 @@ export function TaskItem({
 
   return (
     <>
-      <li className="group flex items-center justify-between gap-2 rounded-md border border-gray-200 p-2 text-sm dark:border-gray-700">
-        <span>{task.title}</span>
-        {canEdit && (
-          <DropdownMenu
-            open={menuOpen}
-            onOpenChange={setMenuOpen}
-            triggerLabel="Task actions"
-            triggerClassName={`text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 ${
-              menuOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus:opacity-100"
-            }`}
-            trigger={<MoreVertical size={16} />}
+      <Draggable draggableId={task.id} index={index}>
+        {(provided, snapshot) => (
+          <li
+            ref={provided.innerRef}
+            {...provided.draggableProps}
+            {...provided.dragHandleProps}
+            style={{ opacity: snapshot.isDragging ? 0.6 : 1, ...provided.draggableProps.style }}
+            className="group flex cursor-grab items-start gap-2 rounded-md border border-gray-200 bg-white p-2 text-sm active:cursor-grabbing dark:border-gray-700 dark:bg-gray-950"
           >
-            <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
-              <Pencil size={14} /> Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={handleDelete} danger>
-              <Trash2 size={14} /> Delete
-            </DropdownMenuItem>
-          </DropdownMenu>
+            <div className="flex-1">
+              <p>{task.title}</p>
+              {task.description && (
+                <p className="text-xs text-gray-500 dark:text-gray-400">{task.description}</p>
+              )}
+            </div>
+            {canEdit && (
+              <DropdownMenu
+                open={menuOpen}
+                onOpenChange={setMenuOpen}
+                triggerLabel="Task actions"
+                triggerClassName={`text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100 ${
+                  menuOpen ? "opacity-100" : "opacity-0 group-hover:opacity-100 focus:opacity-100"
+                }`}
+                trigger={<MoreVertical size={16} />}
+              >
+                <DropdownMenuItem onClick={() => setIsEditModalOpen(true)}>
+                  <Pencil size={14} /> Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={handleDelete} danger>
+                  <Trash2 size={14} /> Delete
+                </DropdownMenuItem>
+              </DropdownMenu>
+            )}
+          </li>
         )}
-      </li>
+      </Draggable>
 
       {isEditModalOpen && (
         <TaskEditModal task={task} onClose={() => setIsEditModalOpen(false)} onSaved={onChanged} />

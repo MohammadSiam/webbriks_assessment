@@ -55,12 +55,13 @@ model BoardMember {
 }
 
 model Column {
-  id        String   @id @default(uuid())
-  boardId   String
-  title     String
-  position  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          String   @id @default(uuid())
+  boardId     String
+  title       String
+  description String?
+  position    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   board Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
   tasks Task[]

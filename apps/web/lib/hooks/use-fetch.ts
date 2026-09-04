@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import { apiRequest } from "@/lib/api-client";
 
 type UseFetchResult<T> = {
@@ -8,6 +8,7 @@ type UseFetchResult<T> = {
   isLoading: boolean;
   error: string | null;
   refetch: () => void;
+  setData: Dispatch<SetStateAction<T | null>>;
 };
 
 export function useFetch<T>(path: string | null): UseFetchResult<T> {
@@ -48,5 +49,5 @@ export function useFetch<T>(path: string | null): UseFetchResult<T> {
 
   const refetch = useCallback(() => setRefetchToken((t) => t + 1), []);
 
-  return { data, isLoading, error, refetch };
+  return { data, isLoading, error, refetch, setData };
 }

@@ -16,12 +16,12 @@ export class ColumnsService {
     const position = generatePosition(lastColumn?.position ?? null, null);
 
     return this.prisma.column.create({
-      data: { boardId, title: dto.title, position },
+      data: { boardId, title: dto.title, description: dto.description, position },
     });
   }
 
   update(id: string, dto: UpdateColumnDto) {
-    return this.prisma.column.update({ where: { id }, data: { title: dto.title } });
+    return this.prisma.column.update({ where: { id }, data: dto });
   }
 
   async delete(id: string) {
