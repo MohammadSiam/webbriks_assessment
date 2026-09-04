@@ -8,8 +8,9 @@ import { addBoardMemberSchema, type AddMemberDto } from "./dto/add-member.dto.js
 import { updateBoardMemberRoleSchema, type UpdateMemberRoleDto } from "./dto/update-member-role.dto.js";
 import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe.js";
 import { BoardAccessGuard } from "../../common/guards/board-access.guard.js";
-import { RequireBoardRole } from "../../common/decorators/require-board-role.decorator.js";
+import { RequireBoardRole, type BoardAccessLevel } from "../../common/decorators/require-board-role.decorator.js";
 import { CurrentUser } from "../../common/decorators/current-user.decorator.js";
+import { CurrentBoardRole } from "../../common/decorators/current-board-role.decorator.js";
 import { toApiBodySchema } from "../../common/swagger/zod-schema.util.js";
 import type { AuthenticatedUser } from "../auth/authenticated-user.js";
 
@@ -37,8 +38,8 @@ export class BoardsController {
 
   @UseGuards(BoardAccessGuard)
   @Get(":id")
-  get(@Param("id") id: string) {
-    return this.boardsService.findById(id);
+  get(@Param("id") id: string, @CurrentBoardRole() myRole: BoardAccessLevel) {
+    return this.boardsService.findById(id, myRole);
   }
 
   @UseGuards(BoardAccessGuard)

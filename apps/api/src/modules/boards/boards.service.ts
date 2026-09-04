@@ -2,6 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from "@nestjs/common
 import type { BoardRole } from "@webbriks/shared-types";
 import { PrismaService } from "../../prisma/prisma.service.js";
 import { UsersService } from "../users/users.service.js";
+import type { BoardAccessLevel } from "../../common/decorators/require-board-role.decorator.js";
 import type { CreateBoardDto } from "./dto/create-board.dto.js";
 import type { UpdateBoardDto } from "./dto/update-board.dto.js";
 
@@ -36,8 +37,26 @@ export class BoardsService {
     return { items, total, page, limit };
   }
 
-  findById(id: string) {
-    return this.prisma.board.findUnique({ where: { id } });
+  async findById(id: string, myRole: BoardAccessLevel) {
+    const board = await this.prisma.board.findUnique({
+      where: { id },
+      include: {
+        columns: {
+          orderBy: { position: "asc" },
+          include: { tasks: { orderBy: { position: "asc" } } },
+        },
+        members: { include: { user: { select: MEMBER_USER_SELECT } } },
+      },
+    });
+    if (!board) {
+      throw new NotFoundException("Board not found");
+    }
+
+    return {
+      ...board,
+      members: myRole === "OWNER" ? board.members : [],
+      myRole,
+    };
   }
 
   update(id: string, dto: UpdateBoardDto) {
