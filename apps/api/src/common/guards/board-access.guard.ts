@@ -58,15 +58,14 @@ export class BoardAccessGuard implements CanActivate {
   }
 
   private async resolveBoardId(request: Request, source: BoardIdSource): Promise<string> {
-    const resourceId = String(request.params.id);
-
     if (source === "param") {
       return String(request.params.boardId ?? request.params.id);
     }
 
     if (source === "column") {
+      const columnId = String(request.params.columnId ?? request.params.id);
       const column = await this.prisma.column.findUnique({
-        where: { id: resourceId },
+        where: { id: columnId },
         select: { boardId: true },
       });
       if (!column) {
@@ -75,8 +74,9 @@ export class BoardAccessGuard implements CanActivate {
       return column.boardId;
     }
 
+    const taskId = String(request.params.taskId ?? request.params.id);
     const task = await this.prisma.task.findUnique({
-      where: { id: resourceId },
+      where: { id: taskId },
       select: { boardId: true },
     });
     if (!task) {

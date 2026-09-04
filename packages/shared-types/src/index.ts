@@ -5,3 +5,4 @@ export * from "./board.js";
 export * from "./board-member.js";
 export * from "./pagination.js";
 export * from "./column.js";
+export * from "./task.js";
