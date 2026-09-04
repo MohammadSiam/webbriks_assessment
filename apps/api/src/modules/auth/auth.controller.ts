@@ -7,6 +7,8 @@ import { ZodValidationPipe } from "../../common/pipes/zod-validation.pipe.js";
 import { Public } from "../../common/decorators/public.decorator.js";
 import { CurrentUser } from "../../common/decorators/current-user.decorator.js";
 import { toApiBodySchema } from "../../common/swagger/zod-schema.util.js";
+import { ApiErrorResponses, ApiSuccessResponse } from "../../common/swagger/api-envelope-response.decorator.js";
+import { authResponseSchema, userSchema } from "../../common/swagger/response-schemas.js";
 import type { AuthenticatedUser } from "./authenticated-user.js";
 
 @ApiTags("auth")
@@ -17,6 +19,8 @@ export class AuthController {
   @Public()
   @Post("register")
   @ApiBody({ schema: toApiBodySchema(registerSchema) })
+  @ApiSuccessResponse(201, authResponseSchema)
+  @ApiErrorResponses(400, 409)
   register(@Body(new ZodValidationPipe(registerSchema)) dto: RegisterDto) {
     return this.authService.register(dto);
   }
@@ -25,11 +29,15 @@ export class AuthController {
   @Post("login")
   @HttpCode(200)
   @ApiBody({ schema: toApiBodySchema(loginSchema) })
+  @ApiSuccessResponse(200, authResponseSchema)
+  @ApiErrorResponses(400, 401)
   login(@Body(new ZodValidationPipe(loginSchema)) dto: LoginDto) {
     return this.authService.login(dto);
   }
 
   @ApiBearerAuth()
+  @ApiSuccessResponse(200, userSchema)
+  @ApiErrorResponses(401)
   @Get("me")
   me(@CurrentUser() user: AuthenticatedUser) {
     return user;
